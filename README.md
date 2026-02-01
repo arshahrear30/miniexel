@@ -3,6 +3,9 @@
 
 A new Flutter project.
 
+
+Description + Ammount = Auto result Like exel
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
