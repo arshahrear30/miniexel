@@ -24,6 +24,7 @@ class ExpenseHome extends StatefulWidget {
 }
 
 class _ExpenseHomeState extends State<ExpenseHome> {
+  // সব expense item এখানে থাকবে
   List<Map<String, dynamic>> items = [
     {"desc": "", "amount": ""}
   ];
@@ -31,17 +32,17 @@ class _ExpenseHomeState extends State<ExpenseHome> {
   @override
   void initState() {
     super.initState();
-    _loadData(); // App চালু হলে ডাটা লোড হবে
+    _loadData(); // অ্যাপ চালু হলে আগে থেকে সেভ করা ডাটা লোড হবে
   }
 
-  // ডাটা ফোনের মেমোরিতে সেভ করার ফাংশন
+  // ডাটা ফোনের লোকাল স্টোরেজে সেভ করার ফাংশন
   Future<void> _saveData() async {
     final prefs = await SharedPreferences.getInstance();
     String encodedData = jsonEncode(items);
     await prefs.setString('expense_data', encodedData);
   }
 
-  // ফোন থেকে সেভ করা ডাটা ফিরিয়ে আনার ফাংশন
+  // লোকাল স্টোরেজ থেকে ডাটা নিয়ে আসার ফাংশন
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
     String? savedData = prefs.getString('expense_data');
@@ -52,7 +53,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
     }
   }
 
-  // মোট টাকা হিসাব করার ফাংশn
+  // সব amount যোগ করে মোট হিসাব বের করার getter
   double get totalAmount {
     double total = 0;
     for (var item in items) {
@@ -70,7 +71,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
           child: Column(
             children: [
-              // Total Amount Section
+              // উপরে মোট টাকা দেখানোর অংশ
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -92,7 +93,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
               ),
               const SizedBox(height: 30),
 
-              // Input Boxes
+              // সব input field লিস্ট আকারে দেখানোর জন্য
               Expanded(
                 child: ListView.builder(
                   itemCount: items.length,
@@ -101,7 +102,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
                       padding: const EdgeInsets.only(bottom: 15.0),
                       child: Row(
                         children: [
-                          // Description Input
+                          // Description ইনপুট ফিল্ড
                           Expanded(
                             flex: 3,
                             child: Container(
@@ -119,9 +120,10 @@ class _ExpenseHomeState extends State<ExpenseHome> {
                                 ),
                                 onChanged: (value) {
                                   items[index]['desc'] = value;
-                                  _saveData(); // টাইপ করার সাথে সাথে সেভ হবে
+                                  _saveData(); // টাইপ করার সাথে সাথে সেভ
                                   setState(() {});
                                 },
+                                // আগের লেখা আবার দেখানোর জন্য controller
                                 controller: TextEditingController.fromValue(
                                   TextEditingValue(
                                     text: items[index]['desc'],
@@ -132,7 +134,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
                             ),
                           ),
                           const SizedBox(width: 15),
-                          // Amount Input
+                          // Amount ইনপুট ফিল্ড
                           Expanded(
                             flex: 1,
                             child: Container(
@@ -151,7 +153,7 @@ class _ExpenseHomeState extends State<ExpenseHome> {
                                 ),
                                 onChanged: (value) {
                                   items[index]['amount'] = value;
-                                  _saveData(); // টাইপ করার সাথে সাথে সেভ হবে
+                                  _saveData(); // টাইপ করার সাথে সাথে সেভ
                                   setState(() {});
                                 },
                                 controller: TextEditingController.fromValue(
@@ -173,12 +175,12 @@ class _ExpenseHomeState extends State<ExpenseHome> {
           ),
         ),
       ),
-      // Floating Action Button
+      // নতুন expense যোগ করার বাটন
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
             items.add({"desc": "", "amount": ""});
-            _saveData();
+            _saveData(); // নতুন row যোগ হলে সাথে সাথে সেভ
           });
         },
         backgroundColor: const Color(0xFF4A4E54),
